@@ -45,19 +45,10 @@ export const Header = () => {
               <Image
                 src={assets.logo.src}
                 alt="AI Automation Logo"
-                width={45}
-                height={45}
-                className="transition-transform group-hover:scale-105"
+                width={400}
+                height={250}
+                className="-ml-20 transition-transform group-hover:scale-105"
               />
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#574668] rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-            <div className="hidden sm:block">
-              <div className="text-sm font-bold text-[#574668] tracking-tight">
-                AI Automation
-              </div>
-              <div className="text-xs text-gray-500 font-light">
-                Smart Solutions
-              </div>
             </div>
           </Link>
 
@@ -87,7 +78,7 @@ export const Header = () => {
               href={whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center gap-2 px-5 py-2.5 bg-[#574668] hover:bg-[#453a52] text-white rounded-full text-sm font-medium transition-all duration-300 shadow-lg shadow-[#574668]/20 hover:shadow-xl hover:shadow-[#574668]/30 hover:scale-105"
+              className="group inline-flex items-center gap-2 px-5 py-2.5 bg-[#11c044] hover:bg-[#11c044] text-white rounded-full text-sm font-medium transition-all duration-300 shadow-lg shadow-[#574668]/20 hover:shadow-xl hover:shadow-[#11c044]/30 hover:scale-105"
             >
               <MessageCircle className="w-4 h-4" />
               <span>Chat on WhatsApp</span>
@@ -138,7 +129,7 @@ export const Header = () => {
               className="mt-2 mx-4"
               onClick={() => setIsMenuOpen(false)}
             >
-              <div className="inline-flex items-center justify-center gap-2 w-full px-5 py-3 bg-[#574668] hover:bg-[#453a52] text-white rounded-full text-sm font-medium transition-all duration-300 shadow-lg">
+              <div className="inline-flex items-center justify-center gap-2 w-full px-5 py-3 bg-[#11c044] hover:bg-[#11c044] text-white rounded-full text-sm font-medium transition-all duration-300 shadow-lg">
                 <MessageCircle className="w-4 h-4" />
                 <span>Chat on WhatsApp</span>
               </div>
