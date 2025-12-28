@@ -3,16 +3,15 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, MessageCircle, Sparkles } from "lucide-react";
-import { getWhatsAppLink } from "@/lib/whatsapp";
 import Image from "next/image";
-import { assets } from "@/assets/assets";
+import { assets } from "../assets/assets";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
 
-  const whatsappLink = getWhatsAppLink();
+  const whatsappLink = "https://wa.me/1234567890";
 
   const navItems = [
     { href: "/", label: "Home" },
