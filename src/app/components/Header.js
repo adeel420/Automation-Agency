@@ -72,6 +72,25 @@ export const Header = () => {
             ))}
           </nav>
 
+          <Link
+            href={"/login"}
+            className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg ${
+              pathname === "/login"
+                ? "text-[#574668]"
+                : "text-gray-700 hover:text-[#574668]"
+            }`}
+          >
+            Login
+            {pathname === "/login" && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#574668] rounded-full" />
+            )}
+          </Link>
+          <Link
+            href={"/signup"}
+            className="group inline-flex items-center gap-2 px-12 py-2.5 bg-[#4d3e5b] hover:bg-[#342a3e] cursor-pointer text-white rounded-full text-sm font-medium transition-all duration-300 shadow-lg shadow-[#4d3e5b]/20 hover:shadow-xl hover:shadow-[#4d3e5b]/30 hover:scale-105"
+          >
+            Signup
+          </Link>
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-4">
             <a
