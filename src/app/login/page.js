@@ -9,29 +9,49 @@ import {
   CheckCircle,
   ArrowRight,
 } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import AuthService from "../services/authService";
+import { useAuth } from "../context/AuthContext";
 
 const Page = () => {
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { login } = useAuth();
+  const router = useRouter();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!agreedToTerms) return alert("Please agree to the terms");
-    if (formData.password !== formData.confirmPassword)
-      return alert("Passwords do not match");
+    setLoading(true);
+    setError("");
 
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 3000);
+    try {
+      const result = await AuthService.login(formData);
+      if (result.error) {
+        setError(result.error);
+      } else {
+        login(result.token, result.user);
+        setIsSubmitted(true);
+
+        // Redirect based on role
+        const redirectPath = result.user.role === 1 ? "/" : "/";
+        setTimeout(() => router.push(redirectPath), 2000);
+      }
+    } catch (err) {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -62,7 +82,7 @@ const Page = () => {
             <div className="text-center py-12">
               <CheckCircle className="w-14 h-14 text-green-600 mx-auto mb-4" />
               <h3 className="text-xl font-bold text-gray-900">
-                Account Created Successfully!
+                Login Successful!
               </h3>
               <p className="text-gray-600 mt-2">Redirecting to homepage...</p>
             </div>
@@ -79,6 +99,12 @@ const Page = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                    {error}
+                  </div>
+                )}
+
                 {/* Email */}
                 <Input
                   icon={<Mail />}
@@ -102,9 +128,10 @@ const Page = () => {
                 {/* Submit */}
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-[#574668] to-[#6b5b7d] hover:from-[#453a52] hover:to-[#574668] text-white py-4 rounded-xl font-semibold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-[#574668] to-[#6b5b7d] hover:from-[#453a52] hover:to-[#574668] text-white py-4 rounded-xl font-semibold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  Create Account <ArrowRight />
+                  {loading ? "Logging in..." : "Log In"} <ArrowRight />
                 </button>
 
                 <div className="flex items-center justify-center ">

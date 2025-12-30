@@ -10,6 +10,8 @@ import {
   Clock,
   CheckCircle,
 } from "lucide-react";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 const ContactCard = ({
   icon: Icon,
@@ -77,14 +79,24 @@ const Page = () => {
 
   const WHATSAPP_NUMBER = "123456754321";
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    const { name, email, phone, service, message } = formData;
+    if (!name || !email || !phone || !service || !message) {
+      toast.error("Please fill all the fields");
+      return;
+    }
     setIsSubmitted(true);
-    setTimeout(() => {
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER}/contact/submit`,
+        formData
+      );
+    } catch (err) {
+      console.log(err);
+    } finally {
       setIsSubmitted(false);
-      setFormData({ name: "", email: "", phone: "", service: "", message: "" });
-    }, 3000);
+    }
   };
 
   const handleChange = (e) => {

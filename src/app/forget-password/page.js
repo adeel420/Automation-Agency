@@ -9,26 +9,68 @@ import {
   CheckCircle,
   ArrowRight,
 } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import AuthService from "../services/authService";
 
 const Page = () => {
+  const [step, setStep] = useState(1); // 1: email, 2: reset password
   const [formData, setFormData] = useState({
     email: "",
+    otp: "",
+    newPassword: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleEmailSubmit = async (e) => {
     e.preventDefault();
-    if (!agreedToTerms) return alert("Please agree to the terms");
-    if (formData.password !== formData.confirmPassword)
-      return alert("Passwords do not match");
+    setLoading(true);
+    setError("");
 
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 3000);
+    try {
+      const result = await AuthService.forgotPassword(formData.email);
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setStep(2);
+      }
+    } catch (err) {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const result = await AuthService.resetPassword({
+        email: formData.email,
+        otp: formData.otp,
+        newPassword: formData.newPassword,
+      });
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setIsSubmitted(true);
+        setTimeout(() => router.push("/login"), 2000);
+      }
+    } catch (err) {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -59,43 +101,91 @@ const Page = () => {
             <div className="text-center py-12">
               <CheckCircle className="w-14 h-14 text-green-600 mx-auto mb-4" />
               <h3 className="text-xl font-bold text-gray-900">
-                Account Created Successfully!
+                Password Reset Successfully!
               </h3>
-              <p className="text-gray-600 mt-2">Redirecting to homepage...</p>
+              <p className="text-gray-600 mt-2">Redirecting to login...</p>
             </div>
           ) : (
             <>
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-gray-900">
-                  Forget Password
+                  {step === 1 ? "Forgot Password" : "Reset Password"}
                 </h2>
                 <p className="text-sm text-gray-600">
-                  Remember your password?{" "}
-                  <a href="/login" className="text-[#574668] font-semibold">
-                    Log In
-                  </a>
+                  {step === 1 ? (
+                    <>
+                      Remember your password?{" "}
+                      <a href="/login" className="text-[#574668] font-semibold">
+                        Log In
+                      </a>
+                    </>
+                  ) : (
+                    "Enter the OTP sent to your email and new password"
+                  )}
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Email */}
-                <Input
-                  icon={<Mail />}
-                  label="Email Address"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
+              {step === 1 ? (
+                <form onSubmit={handleEmailSubmit} className="space-y-5">
+                  {error && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                      {error}
+                    </div>
+                  )}
 
-                {/* Submit */}
-                <button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-[#574668] to-[#6b5b7d] hover:from-[#453a52] hover:to-[#574668] text-white py-4 rounded-xl font-semibold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-                >
-                  Reset Password <ArrowRight />
-                </button>
-              </form>
+                  <Input
+                    icon={<Mail />}
+                    label="Email Address"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-gradient-to-r from-[#574668] to-[#6b5b7d] hover:from-[#453a52] hover:to-[#574668] text-white py-4 rounded-xl font-semibold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {loading ? "Sending OTP..." : "Send OTP"} <ArrowRight />
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleResetSubmit} className="space-y-5">
+                  {error && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                      {error}
+                    </div>
+                  )}
+
+                  <Input
+                    icon={<Mail />}
+                    label="OTP Code"
+                    name="otp"
+                    type="text"
+                    value={formData.otp}
+                    onChange={handleChange}
+                    placeholder="Enter 6-digit OTP"
+                  />
+
+                  <PasswordInput
+                    label="New Password"
+                    value={formData.newPassword}
+                    onChange={handleChange}
+                    name="newPassword"
+                    show={showPassword}
+                    toggle={() => setShowPassword(!showPassword)}
+                  />
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-gradient-to-r from-[#574668] to-[#6b5b7d] hover:from-[#453a52] hover:to-[#574668] text-white py-4 rounded-xl font-semibold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {loading ? "Resetting..." : "Reset Password"} <ArrowRight />
+                  </button>
+                </form>
+              )}
             </>
           )}
         </div>

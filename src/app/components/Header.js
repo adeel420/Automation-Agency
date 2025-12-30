@@ -1,15 +1,20 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, X, MessageCircle, Sparkles } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Menu, X, MessageCircle, LogOut } from "lucide-react";
+import { Popover } from "antd";
+import { MdDashboard, MdLogout } from "react-icons/md";
 import Image from "next/image";
 import { assets } from "../assets/assets";
+import { useAuth } from "../context/AuthContext";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout, isAuthenticated } = useAuth();
 
   const whatsappLink = "https://wa.me/1234567890";
 
@@ -28,6 +33,31 @@ export const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    setIsMenuOpen(false);
+    router.push("/login");
+  };
+
+  const content = (
+    <div className="w-[150px]">
+      {user?.role === 1 && (
+        <button
+          onClick={() => router.push("/admin_dashboard")}
+          className="hover:bg-[#ccc] text-[black] w-full text-left p-2 flex gap-2 items-center text-[18px] font-semibold rounded cursor-pointer"
+        >
+          <MdDashboard /> Dashboard
+        </button>
+      )}
+      <button
+        onClick={handleLogout}
+        className="hover:bg-[#ccc] w-full text-left p-2 flex gap-2 items-center text-[18px] font-semibold rounded cursor-pointer"
+      >
+        <MdLogout /> Logout
+      </button>
+    </div>
+  );
 
   return (
     <header
@@ -72,25 +102,45 @@ export const Header = () => {
             ))}
           </nav>
 
-          <Link
-            href={"/login"}
-            className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg ${
-              pathname === "/login"
-                ? "text-[#574668]"
-                : "text-gray-700 hover:text-[#574668]"
-            }`}
-          >
-            Login
-            {pathname === "/login" && (
-              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#574668] rounded-full" />
+          {/* Auth Buttons */}
+          <div className="hidden lg:flex items-center gap-3">
+            {isAuthenticated ? (
+              <Popover content={content} trigger="click">
+                <div className="w-10 h-10 bg-[#4d3e5b] rounded-full flex items-center justify-center text-white font-bold cursor-pointer">
+                  {user?.name
+                    ? user.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
+                    : ""}
+                </div>
+              </Popover>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg ${
+                    pathname === "/login"
+                      ? "text-[#574668]"
+                      : "text-gray-700 hover:text-[#574668]"
+                  }`}
+                >
+                  Login
+                  {pathname === "/login" && (
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#574668] rounded-full" />
+                  )}
+                </Link>
+                <Link
+                  href="/signup"
+                  className="group inline-flex items-center gap-2 px-6 py-2.5 bg-[#4d3e5b] hover:bg-[#342a3e] cursor-pointer text-white rounded-full text-sm font-medium transition-all duration-300 shadow-lg shadow-[#4d3e5b]/20 hover:shadow-xl hover:shadow-[#4d3e5b]/30 hover:scale-105"
+                >
+                  Signup
+                </Link>
+              </>
             )}
-          </Link>
-          <Link
-            href={"/signup"}
-            className="group inline-flex items-center gap-2 px-12 py-2.5 bg-[#4d3e5b] hover:bg-[#342a3e] cursor-pointer text-white rounded-full text-sm font-medium transition-all duration-300 shadow-lg shadow-[#4d3e5b]/20 hover:shadow-xl hover:shadow-[#4d3e5b]/30 hover:scale-105"
-          >
-            Signup
-          </Link>
+          </div>
+
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-4">
             <a
@@ -141,6 +191,40 @@ export const Header = () => {
                 {item.label}
               </Link>
             ))}
+
+            {/* Mobile Auth */}
+            {isAuthenticated ? (
+              <div className="mx-4 mt-2">
+                <Popover content={content} trigger="click">
+                  <div className="w-10 h-10 bg-[#4d3e5b] rounded-full flex items-center justify-center text-white font-bold cursor-pointer">
+                    {user?.name
+                      ? user.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()
+                      : ""}
+                  </div>
+                </Popover>
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="mx-4 mt-2 inline-flex items-center justify-center gap-2 w-full px-5 py-3 bg-[#4d3e5b] hover:bg-[#342a3e] text-white rounded-full text-sm font-medium transition-all duration-300 shadow-lg"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  className="mx-4 mt-1 inline-flex items-center justify-center gap-2 w-full px-5 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-sm font-medium transition-all duration-300"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Signup
+                </Link>
+              </>
+            )}
             <a
               href={whatsappLink}
               target="_blank"

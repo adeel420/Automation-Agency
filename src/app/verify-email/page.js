@@ -9,26 +9,41 @@ import {
   CheckCircle,
   ArrowRight,
 } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import AuthService from "../services/authService";
 
 const Page = () => {
   const [formData, setFormData] = useState({
-    email: "",
+    code: "",
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!agreedToTerms) return alert("Please agree to the terms");
-    if (formData.password !== formData.confirmPassword)
-      return alert("Passwords do not match");
+    setLoading(true);
+    setError("");
 
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 3000);
+    try {
+      const result = await AuthService.verifyEmail(formData.code);
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setIsSubmitted(true);
+        setTimeout(() => router.push("/login"), 2000);
+      }
+    } catch (err) {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -59,9 +74,9 @@ const Page = () => {
             <div className="text-center py-12">
               <CheckCircle className="w-14 h-14 text-green-600 mx-auto mb-4" />
               <h3 className="text-xl font-bold text-gray-900">
-                Account Created Successfully!
+                Email Verified Successfully!
               </h3>
-              <p className="text-gray-600 mt-2">Redirecting to homepage...</p>
+              <p className="text-gray-600 mt-2">Redirecting to login...</p>
             </div>
           ) : (
             <>
@@ -72,22 +87,30 @@ const Page = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Email */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                    {error}
+                  </div>
+                )}
+
+                {/* Verification Code */}
                 <Input
                   icon={<Mail />}
-                  label="Enter OTP"
-                  name="text"
+                  label="Enter Verification Code"
+                  name="code"
                   type="text"
-                  value={formData.email}
+                  value={formData.code}
                   onChange={handleChange}
+                  placeholder="Enter 6-digit code"
                 />
 
                 {/* Submit */}
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-[#574668] to-[#6b5b7d] hover:from-[#453a52] hover:to-[#574668] text-white py-4 rounded-xl font-semibold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-[#574668] to-[#6b5b7d] hover:from-[#453a52] hover:to-[#574668] text-white py-4 rounded-xl font-semibold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  Verify <ArrowRight />
+                  {loading ? "Verifying..." : "Verify"} <ArrowRight />
                 </button>
               </form>
             </>

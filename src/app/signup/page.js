@@ -9,7 +9,8 @@ import {
   CheckCircle,
   ArrowRight,
 } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import AuthService from "../services/authService";
 
 const Page = () => {
   const [formData, setFormData] = useState({
@@ -19,19 +20,33 @@ const Page = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!agreedToTerms) return alert("Please agree to the terms");
-    if (formData.password !== formData.confirmPassword)
-      return alert("Passwords do not match");
+    setLoading(true);
+    setError("");
 
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 3000);
+    try {
+      const result = await AuthService.signup(formData);
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setIsSubmitted(true);
+        setTimeout(() => router.push("/verify-email"), 2000);
+      }
+    } catch (err) {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -64,7 +79,7 @@ const Page = () => {
               <h3 className="text-xl font-bold text-gray-900">
                 Account Created Successfully!
               </h3>
-              <p className="text-gray-600 mt-2">Redirecting to login...</p>
+              <p className="text-gray-600 mt-2">Redirecting to verify email...</p>
             </div>
           ) : (
             <>
@@ -79,6 +94,12 @@ const Page = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                    {error}
+                  </div>
+                )}
+
                 {/* Full Name */}
                 <Input
                   icon={<User />}
@@ -111,9 +132,10 @@ const Page = () => {
                 {/* Submit */}
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-[#574668] to-[#6b5b7d] hover:from-[#453a52] hover:to-[#574668] text-white py-4 rounded-xl font-semibold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-[#574668] to-[#6b5b7d] hover:from-[#453a52] hover:to-[#574668] text-white py-4 rounded-xl font-semibold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  Create Account <ArrowRight />
+                  {loading ? "Creating Account..." : "Create Account"} <ArrowRight />
                 </button>
               </form>
             </>

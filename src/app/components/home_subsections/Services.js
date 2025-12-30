@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import {
   MessageCircle,
   Globe,
@@ -6,35 +8,37 @@ import {
   Check,
   ArrowRight,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 const ServiceCard = ({
-  icon: Icon,
+  image: image,
   title,
   features,
-  description,
-  gradient,
-  accent,
+  subtitle,
+  color,
+  id,
 }) => (
   <div className="group relative bg-white border-2 border-gray-100 rounded-3xl p-8 hover:border-[#574668]/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col gap-6 h-full overflow-hidden">
     {/* Accent line on hover */}
     <div
-      className={`absolute top-0 left-0 right-0 h-1 ${accent} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+      className={`absolute top-0 left-0 right-0 h-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+      style={{ background: color }}
     />
 
     {/* Icon with gradient background */}
     <div
-      className={`w-16 h-16 ${gradient} rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}
+      className={`w-16 h-16 rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}
+      style={{ background: color }}
     >
-      <Icon className="w-8 h-8" />
+      <Image src={image} className="w-8 h-8 " height={8} width={8} alt="" />
     </div>
 
     <div>
       <h3 className="text-2xl font-bold mb-3 text-gray-900 group-hover:text-[#574668] transition-colors">
         {title}
       </h3>
-      <p className="text-gray-600 mb-6 text-base leading-relaxed">
-        {description}
-      </p>
+      <p className="text-gray-600 mb-6 text-base leading-relaxed">{subtitle}</p>
     </div>
 
     <ul className="space-y-3 mt-auto">
@@ -44,7 +48,8 @@ const ServiceCard = ({
           className="flex items-center gap-3 text-base text-gray-700 group/item"
         >
           <div
-            className={`w-6 h-6 ${gradient} rounded-lg flex items-center justify-center flex-shrink-0 shadow-md group-hover/item:scale-110 transition-transform`}
+            className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md group-hover/item:scale-110 transition-transform`}
+            style={{ backgroundColor: color }}
           >
             <Check className="w-4 h-4 text-white" />
           </div>
@@ -55,55 +60,33 @@ const ServiceCard = ({
 
     {/* Learn more link */}
     <div className="mt-4 pt-4 border-t border-gray-100">
-      <div className="inline-flex items-center gap-2 text-sm font-semibold text-[#574668] opacity-0 group-hover:opacity-100 transition-opacity">
-        <span>Learn more</span>
-        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-      </div>
+      <Link href={`/services/${id}`}>
+        <div className="inline-flex items-center gap-2 text-sm font-semibold text-[#574668] opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+          <span>Learn more</span>
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </div>
+      </Link>
     </div>
   </div>
 );
 
 export const Services = () => {
-  const services = [
-    {
-      icon: MessageCircle,
-      title: "WhatsApp Automation Bots",
-      description: "Built based on your real customer flow.",
-      gradient: "bg-gradient-to-br from-[#25D366] to-[#128C7E]",
-      accent: "bg-[#25D366]",
-      features: [
-        "Auto-replies",
-        "Lead capture",
-        "Business hour responses",
-        "Booking & FAQs",
-      ],
-    },
-    {
-      icon: Globe,
-      title: "Website Automation Bots",
-      description: "Simple, fast, and easy to manage.",
-      gradient: "bg-gradient-to-br from-blue-600 to-blue-800",
-      accent: "bg-blue-600",
-      features: [
-        "Website chatbots",
-        "Automated forms",
-        "Lead routing",
-        "WhatsApp integration",
-      ],
-    },
-    {
-      icon: Settings2,
-      title: "Custom Automation Solutions",
-      description: "Only feasible projects are accepted.",
-      gradient: "bg-gradient-to-br from-[#574668] to-[#453a52]",
-      accent: "bg-[#574668]",
-      features: [
-        "Tailored workflows",
-        "Multi-step automation",
-        "Consultation based",
-      ],
-    },
-  ];
+  const [services, setServices] = useState([]);
+
+  const fetchServices = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_SERVER}/service/all`
+      );
+      setServices(res.data);
+    } catch (err) {
+      console.error("Fetch Services Error:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
 
   return (
     <div
@@ -134,8 +117,20 @@ export const Services = () => {
 
         {/* Services Grid - Fully Responsive */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 md:gap-8 lg:gap-10">
-          {services.map((service, idx) => (
-            <ServiceCard key={idx} {...service} />
+          {services.slice(0, 3).map((service, idx) => (
+            <ServiceCard
+              key={service._id || idx}
+              image={service.image} // default icon
+              title={service.title}
+              subtitle={service.subtitle}
+              id={service._id}
+              features={
+                Array.isArray(service.features)
+                  ? service.features
+                  : JSON.parse(service.features)
+              }
+              color={service.color}
+            />
           ))}
         </div>
       </div>

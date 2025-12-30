@@ -9,7 +9,10 @@ import Link from "next/link";
 import Contact_subsection from "../components/admin_subsections/Contact_subsection";
 import Image from "next/image";
 import { assets } from "../assets/assets";
-import Tab1 from "./Tab1";
+import Tab1 from "../components/admin_subsections/Tab1";
+import Tab3 from "../components/admin_subsections/Tab3";
+import Tab2 from "../components/admin_subsections/Tab2";
+import Tab4 from "../components/admin_subsections/Tab4";
 
 export default function Page() {
   const [activeTab, setActiveTab] = useState("services");
@@ -147,9 +150,9 @@ export default function Page() {
         <main className="p-4 md:p-6">
           {activeTab === "services" && <Tab1 />}
 
-          {activeTab === "update services" && <h1>sdfghjhgfddf7654365tre</h1>}
-          {activeTab === "demo" && <h1>sdfghjhgfddf7654365tre</h1>}
-          {activeTab === "update live demo" && <h1>sdfghjhgfddf7654365tre</h1>}
+          {activeTab === "update services" && <Tab2 />}
+          {activeTab === "demo" && <Tab3 />}
+          {activeTab === "update live demo" && <Tab4 />}
 
           {activeTab === "contact" && (
             <div className="overflow-x-auto">
