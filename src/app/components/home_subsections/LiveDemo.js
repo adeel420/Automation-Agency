@@ -1,21 +1,18 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Play, X, ExternalLink } from "lucide-react";
+import axios from "axios";
 
-const DemoCard = ({ title, description, onPlay, gradient }) => (
+const DemoCard = ({ title, subtitle, onPlay, color }) => (
   <div
     className="group relative rounded-2xl sm:rounded-3xl overflow-hidden aspect-video flex items-center justify-center cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-500"
     onClick={onPlay}
   >
-    {/* Gradient Background */}
     <div
-      className={`absolute inset-0 ${gradient} group-hover:scale-110 transition-transform duration-700`}
+      className={`absolute inset-0 group-hover:scale-110 transition-transform duration-700`}
+      style={{ backgroundColor: color }}
     />
-
-    {/* Overlay pattern */}
     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-
-    {/* Grid pattern overlay */}
     <div
       className="absolute inset-0 opacity-10"
       style={{
@@ -36,7 +33,7 @@ const DemoCard = ({ title, description, onPlay, gradient }) => (
         {title}
       </h3>
       <p className="text-gray-200 text-sm sm:text-base font-medium">
-        {description}
+        {subtitle}
       </p>
       <div className="mt-3 sm:mt-4 inline-flex items-center gap-2 text-white/80 text-xs sm:text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
         <span>View Demo</span>
@@ -48,28 +45,24 @@ const DemoCard = ({ title, description, onPlay, gradient }) => (
 
 export const LiveDemos = () => {
   const [activeDemo, setActiveDemo] = useState(null);
+  const [demos, setDemos] = useState([]);
+  const [error, setError] = useState("");
 
-  const demos = [
-    {
-      id: 1,
-      title: "WhatsApp Lead Capture",
-      description: "See how we capture leads automatically.",
-      gradient: "bg-gradient-to-br from-[#25D366] via-[#128C7E] to-[#075E54]",
-    },
-    {
-      id: 2,
-      title: "Customer Support Bot",
-      description: "Instant answers 24/7.",
-      gradient: "bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900",
-    },
-    {
-      id: 3,
-      title: "Appointment Booking",
-      description: "Schedule meetings without back-and-forth.",
-      gradient:
-        "bg-gradient-to-br from-purple-600 via-purple-700 to-purple-900",
-    },
-  ];
+  useEffect(() => {
+    fetchDemos();
+  }, []);
+
+  const fetchDemos = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_SERVER}/demo`
+      );
+      setDemos(response.data);
+    } catch (err) {
+      console.error("Fetch Error:", err);
+      setError("Failed to load demos");
+    }
+  };
 
   return (
     <div
@@ -103,11 +96,13 @@ export const LiveDemos = () => {
 
         {/* Demos Grid - Fully Responsive */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 md:gap-8 lg:gap-10">
-          {demos.map((demo) => (
+          {demos.slice(0, 3).map((demo) => (
             <DemoCard
-              key={demo.id}
-              {...demo}
-              onPlay={() => setActiveDemo(demo.id)}
+              key={demo._id}
+              title={demo.title}
+              subtitle={demo.subtitle}
+              color={demo.color}
+              onPlay={() => setActiveDemo(demo)}
             />
           ))}
         </div>
@@ -132,25 +127,29 @@ export const LiveDemos = () => {
               <X className="w-5 h-5 sm:w-5.5 sm:h-5.5 md:w-6 md:h-6" />
             </button>
 
-            {/* Video Container */}
+            {/* Video Player */}
             <div className="aspect-video bg-gradient-to-br from-[#574668] to-[#453a52] flex items-center justify-center relative">
-              <div className="absolute inset-0 bg-black/30" />
-              <p className="text-white text-base sm:text-lg md:text-xl text-center px-4 sm:px-6 md:px-8 relative z-10">
-                [Video Player Placeholder for Demo #{activeDemo}]
-                <br />
-                <span className="text-xs sm:text-sm text-gray-300 mt-2 block">
-                  Embed YouTube/Vimeo/MP4 here
-                </span>
-              </p>
+              {activeDemo.video ? (
+                <video
+                  src={activeDemo.video}
+                  controls
+                  autoPlay
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <p className="text-white text-center px-4">
+                  No video available for this demo
+                </p>
+              )}
             </div>
 
             {/* Modal Content */}
             <div className="p-4 sm:p-6 md:p-8 bg-gray-50">
               <h3 className="text-xl sm:text-2xl font-bold mb-2 text-gray-900">
-                {demos.find((d) => d.id === activeDemo)?.title}
+                {activeDemo.title}
               </h3>
               <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
-                {demos.find((d) => d.id === activeDemo)?.description}
+                {activeDemo.subtitle}
               </p>
               <button
                 onClick={() => setActiveDemo(null)}

@@ -1,22 +1,20 @@
 "use client";
 import { ExternalLink, Play, Sparkles, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FloatingWhatsapp from "../components/FloatingWhatsapp";
+import axios from "axios";
+import { ScaleLoader } from "react-spinners";
 
-const DemoCard = ({ title, description, onPlay, gradient }) => (
+const DemoCard = ({ title, subtitle, onPlay, color }) => (
   <div
     className="group relative rounded-2xl sm:rounded-3xl overflow-hidden aspect-video flex items-center justify-center cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-500"
     onClick={onPlay}
   >
-    {/* Gradient Background */}
     <div
-      className={`absolute inset-0 ${gradient} group-hover:scale-110 transition-transform duration-700`}
+      className={`absolute inset-0 group-hover:scale-110 transition-transform duration-700`}
+      style={{ backgroundColor: color }}
     />
-
-    {/* Overlay pattern */}
     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-
-    {/* Grid pattern overlay */}
     <div
       className="absolute inset-0 opacity-10"
       style={{
@@ -37,7 +35,7 @@ const DemoCard = ({ title, description, onPlay, gradient }) => (
         {title}
       </h3>
       <p className="text-gray-200 text-sm sm:text-base font-medium">
-        {description}
+        {subtitle}
       </p>
       <div className="mt-3 sm:mt-4 inline-flex items-center gap-2 text-white/80 text-xs sm:text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
         <span>View Demo</span>
@@ -49,85 +47,97 @@ const DemoCard = ({ title, description, onPlay, gradient }) => (
 
 export default function page() {
   const [activeDemo, setActiveDemo] = useState(null);
+  const [demos, setDemos] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
-  const demos = [
-    {
-      id: 1,
-      title: "WhatsApp Lead Capture",
-      description: "See how we capture leads automatically.",
-      gradient: "bg-gradient-to-br from-[#25D366] via-[#128C7E] to-[#075E54]",
-    },
-    {
-      id: 2,
-      title: "Customer Support Bot",
-      description: "Instant answers 24/7.",
-      gradient: "bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900",
-    },
-    {
-      id: 3,
-      title: "Appointment Booking",
-      description: "Schedule meetings without back-and-forth.",
-      gradient:
-        "bg-gradient-to-br from-purple-600 via-purple-700 to-purple-900",
-    },
-  ];
+  useEffect(() => {
+    fetchDemos();
+  }, []);
+
+  const fetchDemos = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_SERVER}/demo`
+      );
+      setDemos(response.data);
+    } catch (err) {
+      console.error("Fetch Error:", err);
+      setError("Failed to load demos");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleShowAll = () => {
+    setLoading(true); // show loader
+    setTimeout(() => {
+      setShowAll(true);
+      setLoading(false); // hide loader after delay
+    }, 1000); // 1 second delay for demo
+  };
+
+  const visibleServices = showAll ? demos : demos.slice(0, 6);
 
   return (
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#574668] via-[#6b5b7d] to-[#453a52] pt-24 sm:pt-28 md:pt-32 lg:pt-40 pb-16 sm:pb-20 md:pb-24 px-4 sm:px-6 lg:px-8">
-        {/* Background decoration */}
-        <div className="absolute inset-0">
-          <div className="absolute top-0 right-0 w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] md:w-[800px] md:h-[800px] bg-white/5 rounded-full blur-3xl animate-float" />
-          <div className="absolute bottom-0 left-0 w-[350px] h-[350px] sm:w-[500px] sm:h-[500px] md:w-[700px] md:h-[700px] bg-white/5 rounded-full blur-3xl animate-float-delayed" />
-        </div>
-
-        {/* Grid pattern */}
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
-                           linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-            backgroundSize: "40px 40px, 60px 60px",
-          }}
-        />
-
         <div className="max-w-6xl mx-auto text-center relative z-10">
-          {/* Badge */}
           <div className="inline-flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2 sm:py-2.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] sm:text-xs font-semibold text-white tracking-wider uppercase mb-6 sm:mb-8">
             <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             Live Demos
           </div>
-
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 sm:mb-5 md:mb-6 text-white drop-shadow-lg leading-tight">
             Live Automation Demos
           </h1>
-
           <p className="text-base sm:text-lg md:text-xl text-gray-200 max-w-3xl mx-auto leading-relaxed drop-shadow-md px-4">
             See how our automation systems work in real scenarios.
           </p>
         </div>
       </section>
+
       <div className="pt-20 pb-16 mx-6 md:pt-20 md:pb-24">
-        {/* Demos Grid - Fully Responsive */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 md:gap-8 lg:gap-10">
-          {demos.map((demo) => (
+          {visibleServices.map((demo) => (
             <DemoCard
-              key={demo.id}
-              {...demo}
-              onPlay={() => setActiveDemo(demo.id)}
+              key={demo._id}
+              title={demo.title}
+              subtitle={demo.subtitle}
+              color={demo.color}
+              onPlay={() => setActiveDemo(demo)}
             />
           ))}
         </div>
 
         {/* Button */}
-        <div className="w-full flex items-center mb-16 mt-16 justify-center ">
-          <button className="group inline-flex items-center gap-2 px-12 py-4 bg-[#4d3e5b] hover:bg-[#342a3e] cursor-pointer text-white rounded-full text-md font-medium transition-all duration-300 shadow-lg shadow-[#4d3e5b]/20 hover:shadow-xl hover:shadow-[#4d3e5b]/30 hover:scale-105">
-            More Services
-          </button>
-        </div>
+        {/* More Services Button / Loader */}
+        {demos.length > 6 && !showAll && (
+          <div className="w-full flex justify-center mb-16">
+            {loading ? (
+              <div className="flex items-center justify-center gap-2">
+                <ScaleLoader
+                  color="#4d3e5b"
+                  height={30}
+                  width={4}
+                  radius={2}
+                  margin={2}
+                />
+              </div>
+            ) : (
+              <button
+                onClick={handleShowAll}
+                className="group inline-flex items-center gap-2 px-12 py-4 bg-[#4d3e5b] hover:bg-[#342a3e] cursor-pointer text-white rounded-full text-md font-medium transition-all duration-300 shadow-lg shadow-[#4d3e5b]/20 hover:shadow-xl hover:shadow-[#4d3e5b]/30 hover:scale-105"
+              >
+                More Live Demos
+              </button>
+            )}
+          </div>
+        )}
 
-        {/* Video Modal - Fully Responsive */}
+        {/* Video Modal */}
         {activeDemo && (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-3 sm:p-4 md:p-6"
@@ -137,34 +147,33 @@ export default function page() {
               className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-5xl overflow-hidden relative shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close Button */}
               <button
                 onClick={() => setActiveDemo(null)}
                 className="absolute top-3 right-3 sm:top-4 sm:right-4 md:top-6 md:right-6 z-10 w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 bg-[#574668] hover:bg-[#453a52] rounded-full flex items-center justify-center text-white transition-all duration-300 shadow-lg hover:scale-110"
-                aria-label="Close"
               >
                 <X className="w-5 h-5 sm:w-5.5 sm:h-5.5 md:w-6 md:h-6" />
               </button>
 
-              {/* Video Container */}
-              <div className="aspect-video bg-gradient-to-br from-[#574668] to-[#453a52] flex items-center justify-center relative">
-                <div className="absolute inset-0 bg-black/30" />
-                <p className="text-white text-base sm:text-lg md:text-xl text-center px-4 sm:px-6 md:px-8 relative z-10">
-                  [Video Player Placeholder for Demo #{activeDemo}]
-                  <br />
-                  <span className="text-xs sm:text-sm text-gray-300 mt-2 block">
-                    Embed YouTube/Vimeo/MP4 here
-                  </span>
-                </p>
+              {/* Video Player */}
+              <div className="aspect-video bg-black flex items-center justify-center">
+                {activeDemo.video ? (
+                  <video
+                    src={activeDemo.video}
+                    controls
+                    autoPlay
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <p className="text-white">No video available</p>
+                )}
               </div>
 
-              {/* Modal Content */}
               <div className="p-4 sm:p-6 md:p-8 bg-gray-50">
                 <h3 className="text-xl sm:text-2xl font-bold mb-2 text-gray-900">
-                  {demos.find((d) => d.id === activeDemo)?.title}
+                  {activeDemo.title}
                 </h3>
                 <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
-                  {demos.find((d) => d.id === activeDemo)?.description}
+                  {activeDemo.subtitle}
                 </p>
                 <button
                   onClick={() => setActiveDemo(null)}
@@ -177,6 +186,7 @@ export default function page() {
           </div>
         )}
       </div>
+
       <FloatingWhatsapp />
     </main>
   );
