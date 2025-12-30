@@ -5,6 +5,7 @@ import { LiveDemos } from "./components/home_subsections/LiveDemo";
 import { Process } from "./components/home_subsections/Process";
 import { WhyChooseUs } from "./components/home_subsections/WhyChooseUs";
 import { CallToAction } from "./components/home_subsections/CallToAction";
+import FloatingWhatsapp from "./components/FloatingWhatsapp";
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
       <Process />
       <WhyChooseUs />
       <CallToAction />
+      <FloatingWhatsapp />
     </div>
   );
 }

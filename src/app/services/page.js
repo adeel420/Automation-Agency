@@ -13,6 +13,7 @@ import axios from "axios";
 import Image from "next/image";
 import { ScaleLoader } from "react-spinners";
 import Link from "next/link";
+import FloatingWhatsapp from "../components/FloatingWhatsapp";
 
 const ServiceCard = ({
   image: image,
@@ -75,7 +76,7 @@ const ServiceCard = ({
 
 export default function ServicesPage() {
   const whatsappLink =
-    "https://wa.me/1234567890?text=Hi, I visited your website and I'm interested in WhatsApp or Website automation for my business. Please guide me further.";
+    "https://wa.me/03218365564?text=Hi, I visited your website and I'm interested in WhatsApp or Website automation for my business. Please guide me further.";
 
   const [services, setServices] = useState([]);
   const [showAll, setShowAll] = useState(false);
@@ -274,6 +275,7 @@ export default function ServicesPage() {
           </p>
         </div>
       </section>
+      <FloatingWhatsapp />
     </main>
   );
 }

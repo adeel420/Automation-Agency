@@ -9,11 +9,9 @@ import {
   Check,
 } from "lucide-react";
 
-// Mock WhatsApp link for demo
-const getWhatsAppLink = () => "https://wa.me/1234567890";
-
 export const Hero = () => {
-  const whatsappLink = getWhatsAppLink();
+  const whatsappLink =
+    "https://wa.me/03218365564?text=Hi, I visited your website and I'm interested in WhatsApp or Website automation for my business. Please guide me further.";
 
   return (
     <section className="pt-20 sm:pt-24 md:pt-20">

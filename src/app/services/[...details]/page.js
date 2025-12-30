@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { ArrowLeft, Sparkles, CheckCircle } from "lucide-react";
 import axios from "axios";
 import Image from "next/image";
+import FloatingWhatsapp from "@/app/components/FloatingWhatsapp";
 
 const ServiceDetails = () => {
   const router = useRouter();
@@ -163,6 +164,7 @@ const ServiceDetails = () => {
           </div>
         </div>
       </div>
+      <FloatingWhatsapp />
     </div>
   );
 };

@@ -7,12 +7,14 @@ import {
   Sparkles,
   ArrowUpRight,
 } from "lucide-react";
+import Image from "next/image";
+import { assets } from "../assets/assets";
 
 export const Footer = () => {
   const whatsappLink =
-    "https://wa.me/1234567890?text=Hi, I visited your website and I'm interested in WhatsApp or Website automation for my business. Please guide me further.";
+    "https://wa.me/03218365564?text=Hi, I visited your website and I'm interested in WhatsApp or Website automation for my business. Please guide me further.";
 
-  const WHATSAPP_NUMBER = "1234567890";
+  const WHATSAPP_NUMBER = "92 321 8365564";
 
   return (
     <footer className="relative bg-gradient-to-b from-gray-900 via-[#574668] to-gray-900 text-white border-t border-[#574668]/30">
@@ -37,17 +39,13 @@ export const Footer = () => {
               href="/"
               className="inline-flex items-center gap-3 mb-6 group"
             >
-              <div className="w-12 h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-white/20 transition-all">
-                <Sparkles className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <div className="text-xl font-bold text-white">
-                  AI Automation
-                </div>
-                <div className="text-xs text-white/70 font-light">
-                  Smart Solutions
-                </div>
-              </div>
+              <Image
+                src={assets.logo.src}
+                alt="AI Automation Logo"
+                width={400}
+                height={250}
+                className="-ml-20 transition-transform group-hover:scale-105"
+              />
             </Link>
             <p className="text-white/80 text-sm max-w-md leading-relaxed mb-8">
               Smart automation solutions for growing businesses. We build

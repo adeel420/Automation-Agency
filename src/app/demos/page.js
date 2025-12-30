@@ -1,6 +1,7 @@
 "use client";
 import { ExternalLink, Play, Sparkles, X } from "lucide-react";
 import { useState } from "react";
+import FloatingWhatsapp from "../components/FloatingWhatsapp";
 
 const DemoCard = ({ title, description, onPlay, gradient }) => (
   <div
@@ -176,6 +177,7 @@ export default function page() {
           </div>
         )}
       </div>
+      <FloatingWhatsapp />
     </main>
   );
 }

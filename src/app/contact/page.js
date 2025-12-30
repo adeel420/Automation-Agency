@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import axios from "axios";
+import FloatingWhatsapp from "../components/FloatingWhatsapp";
 
 const ContactCard = ({
   icon: Icon,
@@ -75,9 +76,9 @@ const Page = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const whatsappLink =
-    "https://wa.me/1234567890?text=Hi, I visited your website and I'm interested in WhatsApp or Website automation for my business. Please guide me further.";
+    "https://wa.me/03218365564?text=Hi, I visited your website and I'm interested in WhatsApp or Website automation for my business. Please guide me further.";
 
-  const WHATSAPP_NUMBER = "123456754321";
+  const WHATSAPP_NUMBER = "92 321 8365564";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -361,6 +362,7 @@ const Page = () => {
           </div>
         </div>
       </section>
+      <FloatingWhatsapp />
     </main>
   );
 };

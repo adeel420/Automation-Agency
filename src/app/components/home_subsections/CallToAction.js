@@ -3,7 +3,7 @@ import { ArrowRight, Sparkles, MessageCircle } from "lucide-react";
 
 export const CallToAction = () => {
   const whatsappLink =
-    "https://wa.me/1234567890?text=Hi, I visited your website and I'm interested in WhatsApp or Website automation for my business. Please guide me further.";
+    "https://wa.me/03218365564?text=Hi, I visited your website and I'm interested in WhatsApp or Website automation for my business. Please guide me further.";
 
   return (
     <div className="relative overflow-hidden bg-gradient-to-br from-[#574668] via-[#453a52] to-[#574668] text-white text-center py-16 sm:py-20 md:py-24 lg:py-28 mt-12 sm:mt-16 md:mt-20 lg:mt-24 px-4 sm:px-6 lg:px-8">

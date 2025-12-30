@@ -4,6 +4,7 @@ import WhyChooseUs from "../components/home_subsections/WhyChooseUs";
 import Process from "../components/home_subsections/Process";
 import Image from "next/image";
 import { assets } from "../assets/assets";
+import FloatingWhatsapp from "../components/FloatingWhatsapp";
 
 const page = () => {
   return (
@@ -85,6 +86,7 @@ const page = () => {
         <Process />
         <WhyChooseUs />
       </div>
+      <FloatingWhatsapp />
     </main>
   );
 };
