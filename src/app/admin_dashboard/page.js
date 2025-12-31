@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import axios from "axios";
-// import { isAuthenticated, getUserData, logout } from "../utils/auth";
 import Link from "next/link";
 import Contact_subsection from "../components/admin_subsections/Contact_subsection";
 import Image from "next/image";
@@ -13,11 +12,13 @@ import Tab1 from "../components/admin_subsections/Tab1";
 import Tab3 from "../components/admin_subsections/Tab3";
 import Tab2 from "../components/admin_subsections/Tab2";
 import Tab4 from "../components/admin_subsections/Tab4";
+import PrivateRoute from "../components/PrivateRoute";
+import { useAuth } from "../context/AuthContext";
 
-export default function Page() {
+function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("services");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [user, setUser] = useState({});
+  const { user, logout } = useAuth();
   const router = useRouter();
 
   const menuItems = [
@@ -32,33 +33,6 @@ export default function Page() {
   const handleLogout = () => {
     router.push("/");
   };
-
-  const checkAuthAndRole = async () => {
-    if (!isAuthenticated()) {
-      toast.error("Please login to access dashboard");
-      router.push("/login");
-      return;
-    }
-
-    const userData = await getUserData();
-    if (!userData) {
-      toast.error("Session expired. Please login again");
-      router.push("/login");
-      return;
-    }
-
-    if (userData.role !== 1) {
-      toast.error("Access denied. Admin privileges required");
-      router.push("/user-dashboard");
-      return;
-    }
-
-    setUser(userData);
-  };
-
-  useEffect(() => {
-    checkAuthAndRole();
-  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
@@ -84,7 +58,7 @@ export default function Page() {
                 } else {
                   setActiveTab(item.id);
                 }
-                if (window.innerWidth < 1024) setSidebarOpen(false); // auto-close on mobile
+                if (window.innerWidth < 1024) setSidebarOpen(false);
               }}
               className={`w-full flex items-center px-4 cursor-pointer py-3 mb-2 rounded-xl transition-all duration-300 ${
                 activeTab === item.id
@@ -143,17 +117,16 @@ export default function Page() {
                 {activeTab}
               </h1>
             </div>
+            <div className="text-sm text-gray-600">Welcome, {user?.name}</div>
           </div>
         </header>
 
         {/* Dashboard Content */}
         <main className="p-4 md:p-6">
           {activeTab === "services" && <Tab1 />}
-
           {activeTab === "update services" && <Tab2 />}
           {activeTab === "demo" && <Tab3 />}
           {activeTab === "update live demo" && <Tab4 />}
-
           {activeTab === "contact" && (
             <div className="overflow-x-auto">
               <Contact_subsection />
@@ -162,5 +135,13 @@ export default function Page() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <PrivateRoute>
+      <AdminDashboard />
+    </PrivateRoute>
   );
 }

@@ -6,7 +6,7 @@ import { assets } from "../assets/assets";
 
 const FloatingWhatsapp = () => {
   const whatsappLink =
-    "https://wa.me/03218365564?text=Hi, I visited your website and I'm interested in WhatsApp or Website automation for my business. Please guide me further.";
+    "https://wa.me/+923218365564?text=Hi, I visited your website and I'm interested in WhatsApp or Website automation for my business. Please guide me further.";
 
   const handleClick = () => {
     window.open(whatsappLink, "_blank"); // open in new tab

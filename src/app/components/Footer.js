@@ -12,7 +12,7 @@ import { assets } from "../assets/assets";
 
 export const Footer = () => {
   const whatsappLink =
-    "https://wa.me/03218365564?text=Hi, I visited your website and I'm interested in WhatsApp or Website automation for my business. Please guide me further.";
+    "https://wa.me/+923218365564?text=Hi, I visited your website and I'm interested in WhatsApp or Website automation for my business. Please guide me further.";
 
   const WHATSAPP_NUMBER = "92 321 8365564";
 

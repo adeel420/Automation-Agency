@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import FloatingWhatsapp from "../components/FloatingWhatsapp";
 import axios from "axios";
 import { ScaleLoader } from "react-spinners";
+import CallToAction from "../components/home_subsections/CallToAction";
 
 const DemoCard = ({ title, subtitle, onPlay, color }) => (
   <div
@@ -187,6 +188,7 @@ export default function page() {
         )}
       </div>
 
+      <CallToAction />
       <FloatingWhatsapp />
     </main>
   );
