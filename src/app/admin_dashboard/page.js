@@ -44,7 +44,7 @@ function AdminDashboard() {
       >
         <div className="flex items-center bg-black/50 justify-center h-16 px-4 border-b border-slate-700">
           <div className="flex items-center space-x-2">
-            <Image src={assets.logo} alt="" />
+            <Image src={assets.logoWhite} alt="" className=" pt-2" />
           </div>
         </div>
 

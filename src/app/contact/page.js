@@ -164,8 +164,8 @@ const Page = () => {
               title="Email"
               description="Send us an email and we'll get back to you within 24 hours."
               buttonText="Send Email"
-              buttonLink="mailto:contact@aiautomation.com"
-              contact="contact@aiautomation.com"
+              buttonLink="mailto:support@zenithflowbot.com"
+              contact="support@zenithflowbot.com"
               gradient="from-[#574668] to-[#6b5b7d]"
               isEmail={true}
             />

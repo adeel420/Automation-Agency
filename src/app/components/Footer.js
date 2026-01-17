@@ -40,7 +40,7 @@ export const Footer = () => {
               className="inline-flex items-center gap-3 mb-6 group"
             >
               <Image
-                src={assets.logo.src}
+                src={assets.logoWhite.src}
                 alt="AI Automation Logo"
                 width={400}
                 height={250}
@@ -125,7 +125,7 @@ export const Footer = () => {
                   <div>
                     <div className="font-semibold text-white">Email</div>
                     <div className="text-xs text-white/60">
-                      contact@aiautomation.com
+                      support@zenithflowbot.com
                     </div>
                   </div>
                 </a>
